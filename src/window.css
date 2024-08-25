@@ -1,0 +1,62 @@
+:root{
+  --sidebar: 1.5em;
+  --small: 0.3em;
+
+}
+*{
+  margin: 0;
+  padding: 0;
+}
+
+.window{
+  height: 100vh;
+  width: 100w;
+
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.sidebar{
+  width: var(--sidebar);
+  height: 100%;
+  
+  background-color: gray;
+}
+
+.container{
+  flex: 1;
+  height: 100%;
+  margin: 0;
+  gap: var(--small);
+
+  display: flex;
+  #line-number{
+    max-width: 2ch;
+    height: 100%;
+
+    padding: 0;
+    margin-top: var(--small);
+
+    white-space: pre-wrap; /*To work \n in text-area*/
+    
+  }
+  textarea{
+    flex: 1;
+    height: 100%;
+
+    resize: none;
+    border: none;
+    outline: none;
+    
+    padding: var(--small) ;
+    line-height: 1.1rem;
+    font-size: 1rem;
+    
+    white-space: nowrap;
+  }
+}
+
+*:hover{
+  opacity: 0.9;
+}

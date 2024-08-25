@@ -1,0 +1,23 @@
+
+.files{
+  flex: 1;
+  max-width: 18em;
+  height: 100%;
+  
+  margin: 0;
+  background-color: red;
+  display: flex;
+  flex-direction: column;
+
+  .file{
+    padding: 0.5em;
+    padding-bottom: 0;
+
+    display: flex;
+    justify-content: space-between;
+
+    img{
+      height: 1em;
+    }
+  }
+}
