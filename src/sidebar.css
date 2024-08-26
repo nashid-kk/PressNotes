@@ -1,0 +1,11 @@
+.sidebar{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+
+  img{
+    width: 100%;
+    background-color: white;
+    border-radius: 7px;
+  }
+}

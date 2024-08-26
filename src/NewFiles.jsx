@@ -8,26 +8,27 @@ export default function File(props) {
 
   function changeNote(note){ // when pressing a note in files
     document.getElementById('main').value = props.notes[note];
-    props.currentNote(note) 
+    props.currentNote(note)  
   }
+
+
+
 
   return (
  
   <div className="files">
-      {Object.keys(props.notes).map((key)=>(
+    {Object.keys(props.notes).map((key)=>(
 
-        <div 
+      <div 
         className='file' 
         key={key} 
         onClick={()=> changeNote(key)}
-        
-        >
-          {key}
-          <img src={optionsIcon} alt=" " />
-        </div>
-        
-      ))}
-    </div>
+      >
+        {key}
+        <img src={optionsIcon} alt=" " />
+      </div>
+    ))}
+  </div>
  
   )
 }

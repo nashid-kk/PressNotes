@@ -8,11 +8,11 @@ function Window(){
 
   let initialNotes = {'Untitled':''};
   let intialCurrentNote = 'Untitled';
+
   if(localStorage.getItem('notes')){
     initialNotes = JSON.parse(localStorage.getItem('notes'));
     intialCurrentNote = Object.keys(JSON.parse(localStorage.getItem('notes')))[0]; 
   }
-
 
   let [lines, setLines] = useState('1\n');
   let [notes,setNote] = useState(initialNotes);      
@@ -28,6 +28,7 @@ function Window(){
       for(let lns in split){
         ln += parseInt(lns) + 1 + '\n';
       }
+      setLines(ln); // refresh lines
   
       setNote((prevNotes)=> ({
         ...prevNotes,
@@ -35,8 +36,6 @@ function Window(){
       }))
       localStorage.setItem('notes',JSON.stringify(notes));
 
-      
-      setLines(ln); // refresh lines
     }
   }
 
@@ -79,18 +78,16 @@ function Window(){
     <>
       <div className="window">
 
-        <SideBar/>
+        <SideBar setNote={setNote}/>
 
         <File notes ={notes} currentNote = {setCurrentNote}/>
 
-
         <div className="container">
 
-          <textarea id='line-number' readOnly cols={1} value={lines}
-          
-          >
+          <textarea id='line-number' readOnly cols={1} value={lines}>
             
           </textarea>
+          
           <textarea 
             id='main' 
             spellCheck={false} 
