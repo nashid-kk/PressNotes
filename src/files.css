@@ -1,4 +1,4 @@
-.files{
+ .files{
   flex: 1;
   max-width: 18em;
   height: 100%;
@@ -9,15 +9,17 @@
   flex-direction: column;
 
   .file{
-    padding: 0.5em;
-    padding-bottom: 0;
     position: relative;
+    height: 2em;
 
     display: flex;
     justify-content: space-between;
+    align-items: center;
+
 
     img{
       height: 1em;
+      padding: 0.3em 0;
     }
 
     &:hover{
@@ -25,4 +27,24 @@
     }
 
   }
+}
+.options-area:hover{
+  .options{
+    display: block;
+  }
+}
+
+.options{
+  position: absolute;
+  width: 5em;
+  right: -5em;
+  top: 0;
+
+  padding: 0.1em 0.3em;
+  padding-left: 0.1em;
+
+  display: none;
+  background-color: lightgray;
+  border-radius: 2px;
+  font-size: 0.9rem;
 }

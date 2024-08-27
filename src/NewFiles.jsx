@@ -1,14 +1,13 @@
-import React from 'react'
-
-import './files.css'
 import optionsIcon from './assets/images/dots.png'
+import './files.css'
 
 export default function File(props) {
-
+  
+  const {workspace} = props;
 
   function changeNote(note){ // when pressing a note in files
     document.getElementById('main').value = props.notes[note];
-    props.currentNote(note)  
+    props.updateCurrentNote(note);
   }
 
 
@@ -25,7 +24,21 @@ export default function File(props) {
         onClick={()=> changeNote(key)}
       >
         {key}
-        <img src={optionsIcon} alt=" " />
+        
+        <div className="options-area">
+          <img className='three-dots' src={optionsIcon} alt=" " />
+          
+          <div className="options">
+            <div>Rename</div>
+
+            <div
+              onClick={()=> workspace.deleteNote(key)}
+            >Delete</div>
+
+            <div>Download</div>
+          </div>
+        </div>
+
       </div>
     ))}
   </div>
