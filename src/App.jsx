@@ -1,15 +1,12 @@
-import Window from './window';
+import Window from "./window"
+
 
 function App() {
 
   return (
     <>
-
-    
      
        <Window/>
-
-    
 
     </>
   )

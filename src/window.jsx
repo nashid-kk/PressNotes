@@ -1,26 +1,51 @@
 import { useEffect, useRef, useState } from 'react';
 
-import SideBar from './NewSide';
-import File from './NewFiles';
-import './window.css'
+import SideBar from './Components/NewSide';
+import File from './Components/Files';
+import './window.css';
 
-function Window(){
+// import workspace from './workspace';
+import VimTextArea from './vimTa';
+
+const Window = ()=>{
 
   let initialNotes = {'Untitled':''};
   let intialCurrentNote = 'Untitled';
+  let initialLines = '1\n';
+  let initialValue = '';
+
+  const calcLines = (text)=>{
+    if(!text) return '1\n';
+    let ln = '';
+    for(let lns in text.split('\n')){
+      ln += parseInt(lns) + 1 + '\n';
+    }
+    return ln;
+  }
+  
+
 
   if(localStorage.getItem('notes')){
     initialNotes = JSON.parse(localStorage.getItem('notes'));
-    intialCurrentNote = Object.keys(JSON.parse(localStorage.getItem('notes')))[0]; 
+    intialCurrentNote = localStorage.getItem('lastCurrentNote');
+    initialValue = initialNotes[intialCurrentNote];
+    initialLines = calcLines(initialValue);
   }
 
-  const [window,updateWindow] = useState({
+  var [window,updateWindow] = useState({
     notes: initialNotes,
     currentNote: intialCurrentNote,
-    lines: '1\n',
-    value: '',
+    lines: initialLines,
+    value: initialValue,
     ShowFiles: true
   })
+
+  const [vimEnabled,setVimEnabled] = useState(false);
+  const toggleVim = ()=>{
+    console.log('Toggling vim');
+    setVimEnabled(!vimEnabled);
+  }
+
 
   const toggleFiles = ()=>{
     updateWindow({
@@ -29,35 +54,8 @@ function Window(){
     })
   }
 
-  const updateNote = (noteId, newNote = '') => {
-    console.log(`updating note ${noteId}`);
-    updateWindow((prevWindow) => ({
-      ...prevWindow,
-      notes: {
-        ...prevWindow.notes,
-        [noteId]: newNote 
-      }
-    }));
-  };
 
-  const updateCurrentNote = (noteName) =>{
-    console.log('Setting current note: ',noteName);
-    let ln = '1\n';
-    if(window.notes[noteName]){
-      ln = '';
-      for(let lns in window.notes[noteName].split('\n')){
-        ln += parseInt(lns) + 1 + '\n';
-      }
-    }
-    updateWindow((prevWindow) => ({
-      ...prevWindow,
-      currentNote: noteName,
-      lines: ln
-    }));
-    window.value = window.notes[noteName];
-  }
-
-  useEffect(()=>{
+  useEffect(()=>{ // for 'notes' 
     const notesString = JSON.stringify(window.notes);
     if(notesString === '{}'){
       localStorage.removeItem('notes');
@@ -66,9 +64,46 @@ function Window(){
     }
   },[window.notes]);
 
+  useEffect(()=>{
+    localStorage.setItem('lastCurrentNote',window.currentNote);
+  },[window.currentNote]);
 
-  const workspace = {
-    deleteNote: (note)=>{
+
+
+  function handleChange(e){
+
+    updateWindow({
+      ...window, // Keep existing values
+      lines: calcLines(e.target.value),
+      value: e.target.value
+    });
+    workspace.updateNote(window.currentNote , e.target.value);
+    
+  } 
+
+
+useEffect(()=>{
+  const main = document.getElementById('main');
+  const lineNumber = document.getElementById('line-number');
+  main.addEventListener('scroll',()=>{
+    lineNumber.scrollTop = main.scrollTop;
+  })
+
+
+    return ()=>{
+    main.removeEventListener('scroll',()=>{
+    lineNumber.scrollTop = main.scrollTop;
+    });
+  }
+},[])
+
+
+
+
+
+
+const workspace = {
+    deleteNote: (note ,shouldUpdateCurrentNote)=>{
       console.log("Deleting note : "+note);
       const newNote = {...window.notes};
       delete newNote[note];
@@ -76,73 +111,78 @@ function Window(){
       const noteNames = Object.keys(newNote);
       if(noteNames.length === 0){
         console.log('last note deleted!');
-        updateCurrentNote('Untitled'); // to save updates into new note
+        workspace.updateCurrentNote('Untitled'); // to save updates into new note
         window.value = '';
         localStorage.removeItem('notes');
         
       } else {
-        const lastNote = Object.values(newNote)[noteNames.length-1];
-        updateCurrentNote(noteNames[noteNames.length-1]); // to save updates into new note
+        // const lastNote = Object.values(newNote)[noteNames.length-1];
+        if(window.currentNote === note && shouldUpdateCurrentNote){
+          console.log('Calling ucn from delete with', noteNames[noteNames.length-1]);
+          workspace.updateCurrentNote(noteNames[noteNames.length-1]); // to save updates into new note
+        }
       }
 
       updateWindow({
         ...window,
         notes: newNote
       })
-    }
-  }
+    },
+
+
+    updateNote : (noteId, newNote = '') => {
+      console.log(`updating note ${noteId}`);
+      updateWindow((prevWindow) => ({
+        ...prevWindow,
+        notes: {
+          ...prevWindow.notes,
+          [noteId]: newNote 
+        }
+      }));
+    },
+
+    renameNote: (oldName,newName)=>{
+      console.log(`Renaming note '${oldName}' to '${newName}'`);
+      const newNotes = {...window.notes,
+        [newName]:window.notes[oldName]
+      };
+      delete newNotes[oldName];
+
+      updateWindow({
+        ...window,
+        notes: newNotes
+      });
+
+      if(window.currentNote === oldName){
+        workspace.updateCurrentNote(newName);
+      }
+    },
+
+
+    updateCurrentNote : (noteName) =>{
+      console.log('Setting current note: ',noteName);
+
+      updateWindow((prevWindow) => ({
+        ...prevWindow,
+        currentNote: noteName,
+        lines: calcLines(window.notes[noteName]), // update lines
+        value: window.notes[noteName], // update note text
+      }));
+    },
+}
 
 
 
-  function handleChange(e){
-    // if(e.key === 'Enter' || e.key ==='Backspace'){ // can be improved
-    //   let ln = '';
-    //   let split = e.target.value.split("\n");
-      
-    //   for(let lns in split){
-    //     ln += parseInt(lns) + 1 + '\n';
-    //   }
 
-    //   updateWindow({
-    //     ...window, // Keep existing values
-    //     lines: ln
-    //   });
-
-
-    //   updateNote(window.currentNote,e.target.value);
-
-    // }
-
-    let ln = '';
-    for(let lns in e.target.value.split('\n')){
-      ln += parseInt(lns) + 1 + '\n';
-    }
-
-    updateWindow({
-      ...window, // Keep existing values
-      lines: ln,
-      value: e.target.value
-    });
-      updateNote(window.currentNote,e.target.value);
-    
-  } 
-
-
-  useEffect(()=>{
-    if(localStorage.getItem('notes')){
-      const firstNote = Object.values(JSON.parse(localStorage.getItem('notes')))[0];
-      document.getElementById('main').value = firstNote;
-    }
-  },[])
 
   return(
     <>
       <div className="window">
 
-        <SideBar updateNote={updateNote} updateCurrentNote = {updateCurrentNote} toggleFiles= {toggleFiles}/>
+        <SideBar workspace={workspace}  toggleFiles= {toggleFiles} toggleVim={toggleVim}/>
 
         {window.ShowFiles &&
-          <File workspace = {workspace} notes ={window.notes} updateCurrentNote = {updateCurrentNote} />
+          <File workspace = {workspace} notes={window.notes} />
          }
 
         <div className="container">
@@ -151,24 +191,27 @@ function Window(){
             
           </textarea>
           
-          <textarea 
-            id='main' 
-            spellCheck={false} 
-            onChange={handleChange}
-            autoComplete='off'
-            autoCorrect='off'
-            value={window.value}
-            >
+          {vimEnabled ? 
+            <VimTextArea 
+              handleChange = {handleChange} 
+              value = {window.value}
+            />:
+            <textarea 
+              id='main' 
+              spellCheck={false} 
+              onChange={handleChange}
+              autoComplete='off'
+              autoCorrect='off'
+              value={window.value}
+              >
           </textarea>
+          }
           
         </div>
-
-
 
       </div>
     </>
   )
 }
 
-
-export default Window;
+export default Window

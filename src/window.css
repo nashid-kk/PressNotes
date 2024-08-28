@@ -29,34 +29,39 @@ body{
 
 .container{
   flex: 1;
-  height: 100%;
+  height: 100vh;
   margin: 0;
   gap: var(--small);
+  box-sizing: border-box;
+  
 
   display: flex;
   #line-number{
     max-width: 2ch;
-    height: 100%;
+    height: calc(100% - var(--small));
 
     padding: 0;
-    margin-top: var(--small);
+    padding-top: var(--small);
 
     white-space: pre-wrap; /*To work \n in text-area*/
-    
   }
   textarea{
     flex: 1;
-    height: 100%;
+    height: calc(100% - var(--small) - var(--small));
 
     resize: none;
     border: none;
     outline: none;
     
-    padding: var(--small) ;
+    padding: var(--small);
     line-height: 1.1rem;
     font-size: 1rem;
     
     white-space: nowrap;
   }
 }
+
+#line-number::-webkit-scrollbar {
+   display: none;
+ }
 
