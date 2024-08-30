@@ -1,6 +1,10 @@
-import updateWindow from "./window";
 
-const workspace = {
+
+function EmptyComponent(props){
+
+  const {updateWindow} = props;
+
+  const workspace = {
     deleteNote: (note ,shouldUpdateCurrentNote)=>{
       console.log("Deleting note : "+note);
       const newNote = {...window.notes};
@@ -67,6 +71,9 @@ const workspace = {
         value: window.notes[noteName], // update note text
       }));
     },
+  }
+
+  return <></>
 }
 
-export default workspace;
+export default EmptyComponent;

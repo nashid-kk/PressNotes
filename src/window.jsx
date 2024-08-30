@@ -1,18 +1,20 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect,  useRef,  useState } from 'react';
 
 import SideBar from './Components/NewSide';
 import File from './Components/Files';
 import './window.css';
 
-// import workspace from './workspace';
+// import Element,{ workspace } from './workspace';
 import VimTextArea from './vimTa';
 
-const Window = ()=>{
+const Window = (props)=>{
 
   let initialNotes = {'Untitled':''};
   let intialCurrentNote = 'Untitled';
   let initialLines = '1\n';
   let initialValue = '';
+
+  const { editor } = props;
 
   const calcLines = (text)=>{
     if(!text) return '1\n';
@@ -32,7 +34,7 @@ const Window = ()=>{
     initialLines = calcLines(initialValue);
   }
 
-  var [window,updateWindow] = useState({
+  const [window,updateWindow] = useState({
     notes: initialNotes,
     currentNote: intialCurrentNote,
     lines: initialLines,
@@ -40,10 +42,15 @@ const Window = ()=>{
     ShowFiles: true
   })
 
+  const mainRef = useRef();
+
   const [vimEnabled,setVimEnabled] = useState(false);
   const toggleVim = ()=>{
     console.log('Toggling vim');
     setVimEnabled(!vimEnabled);
+    if (mainRef.current) {
+      mainRef.current.focus();
+    } 
   }
 
 
@@ -90,44 +97,41 @@ useEffect(()=>{
   })
 
 
-    return ()=>{
-    main.removeEventListener('scroll',()=>{
-    lineNumber.scrollTop = main.scrollTop;
-    });
+  return ()=>{
+  main.removeEventListener('scroll',()=>{
+  lineNumber.scrollTop = main.scrollTop;
+  });
   }
 },[])
 
 
 
-
-
-
 const workspace = {
-    deleteNote: (note ,shouldUpdateCurrentNote)=>{
-      console.log("Deleting note : "+note);
-      const newNote = {...window.notes};
-      delete newNote[note];
+  deleteNote: (note ,shouldUpdateCurrentNote)=>{
+    console.log("Deleting note : "+note);
+    const newNote = {...window.notes};
+    delete newNote[note];
+    
+    const noteNames = Object.keys(newNote);
+    if(noteNames.length === 0){
+      console.log('last note deleted!');
+      workspace.updateCurrentNote('Untitled'); // to save updates into new note
+      window.value = '';
+      localStorage.removeItem('notes');
       
-      const noteNames = Object.keys(newNote);
-      if(noteNames.length === 0){
-        console.log('last note deleted!');
-        workspace.updateCurrentNote('Untitled'); // to save updates into new note
-        window.value = '';
-        localStorage.removeItem('notes');
-        
-      } else {
-        // const lastNote = Object.values(newNote)[noteNames.length-1];
-        if(window.currentNote === note && shouldUpdateCurrentNote){
-          console.log('Calling ucn from delete with', noteNames[noteNames.length-1]);
-          workspace.updateCurrentNote(noteNames[noteNames.length-1]); // to save updates into new note
-        }
+    } else {
+      // const lastNote = Object.values(newNote)[noteNames.length-1];
+      if(window.currentNote === note && shouldUpdateCurrentNote){
+        console.log('Calling ucn from delete with', noteNames[noteNames.length-1]);
+        workspace.updateCurrentNote(noteNames[noteNames.length-1]); // to save updates into new note
       }
+    }
 
-      updateWindow({
-        ...window,
-        notes: newNote
-      })
-    },
+    updateWindow({
+      ...window,
+      notes: newNote
+    })
+  },
 
 
     updateNote : (noteId, newNote = '') => {
@@ -172,14 +176,22 @@ const workspace = {
 }
 
 
-
+  const eidtorStyle ={
+    fontSize: editor.fontSize
+  }
 
 
   return(
     <>
       <div className="window">
 
-        <SideBar workspace={workspace}  toggleFiles= {toggleFiles} toggleVim={toggleVim}/>
+        <SideBar 
+          workspace={workspace}  
+          toggleFiles= {toggleFiles}
+          toggleVim={toggleVim}
+          vimEnabled={vimEnabled}  
+          setLocation={props.setLocation}
+        />
 
         {window.ShowFiles &&
           <File workspace = {workspace} notes={window.notes} />
@@ -187,7 +199,12 @@ const workspace = {
 
         <div className="container">
 
-          <textarea id='line-number' readOnly cols={1} value={window.lines}>
+          <textarea 
+           id='line-number'
+           readOnly cols={1} 
+           value={window.lines}
+           style={eidtorStyle}
+          >
             
           </textarea>
           
@@ -195,23 +212,27 @@ const workspace = {
             <VimTextArea 
               handleChange = {handleChange} 
               value = {window.value}
+              style={eidtorStyle}
             />:
             <textarea 
-              id='main' 
-              spellCheck={false} 
+              id='main'
+              spellCheck={false}
               onChange={handleChange}
               autoComplete='off'
               autoCorrect='off'
               value={window.value}
+              ref={mainRef}
+              style={eidtorStyle}
               >
-          </textarea>
+            </textarea>
           }
           
         </div>
 
       </div>
+      
     </>
   )
 }
 
-export default Window
+export default Window;

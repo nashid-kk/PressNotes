@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { VIM } from './lib/jsvim.js';
+import { VIM } from '../lib/jsvim.js';
 
 const VimTextArea = (props) => {
   const textareaRef = useRef(null);
@@ -8,7 +8,7 @@ const VimTextArea = (props) => {
     if (textareaRef.current) {
       const vim = new VIM();
       
-      // vim.on_log = (m) => console.log('VIM: ' + m);
+      vim.on_log = (m) => console.log('%cVIM: ' + m,'color: lightblue;');
       
       vim.attach_to(textareaRef.current);
       textareaRef.current.focus();
