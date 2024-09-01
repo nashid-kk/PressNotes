@@ -1,14 +1,35 @@
 import Window from "./window"
 import Settings from "./Settings/Settings"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 
 function App() {
 
   const [locataion,setLocation] = useState('Editor');
   const [editor,updateEditor] = useState({
-    fontSize: '1rem'
+    style:{
+      fontSize: '1rem',
+      fontFamily: 'monospace'
+    },
+    showLineNumbers: true,
   })
+
+  const updateEditorStyle=(newStyle, value) => {
+    updateEditor({
+      ...editor,
+      style:{
+        ...editor.style,
+        [newStyle]: value
+      }
+    })
+  }
+
+  const changeEditor= (key,value)=>{
+    updateEditor({
+      ...editor,
+      [key] : value
+    })
+  }
   
 
   
@@ -17,7 +38,7 @@ function App() {
      
       {
         locataion === 'Settings' ? 
-          <Settings editor={editor} setLocation={setLocation} updateEditor={updateEditor}/> :
+          <Settings editor={editor} changeEditor={changeEditor} updateEditorStyle={updateEditorStyle} setLocation={setLocation}  updateEditor={updateEditor}/> :
           <Window editor={editor}  setLocation={setLocation}/>
       }
 

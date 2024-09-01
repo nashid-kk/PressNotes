@@ -7,8 +7,7 @@ const VimTextArea = (props) => {
   useEffect(() => {
     if (textareaRef.current) {
       const vim = new VIM();
-      
-      vim.on_log = (m) => console.log('%cVIM: ' + m,'color: lightblue;');
+      vim.on_log = (m) => console.log('%cVIM: ' + m,'color: lightgreen;');
       
       vim.attach_to(textareaRef.current);
       textareaRef.current.focus();
@@ -18,6 +17,7 @@ const VimTextArea = (props) => {
   return <textarea 
     ref={textareaRef}
     id='main' 
+    style={props.style}
     spellCheck={false} 
     onChange={props.handleChange}
     autoComplete='off'

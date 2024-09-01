@@ -2,14 +2,11 @@ import React  from 'react'
 
 export default function Selector(props) {
 
-  const { options,capitalizefirst } = props;
+  const { options } = props;
 
 
   
-  // const capitalizefirst=(word)=>{
-  //   return word.charAt(0).toUpperCase() + word.slice(1);
-  // }
-  const defultSize = capitalizefirst ? capitalizefirst(props.default ? props.default: ''): null;
+  const defultSize = props.default ? props.default: '';
   const newOptions = options.filter((element)=> element !== defultSize);
 
   return (

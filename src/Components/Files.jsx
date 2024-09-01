@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import optionsIcon from '../assets/images/dots.png'
 import './files.css'
 
@@ -6,23 +5,29 @@ export default function File(props) {
   
   const { workspace } = props;
 
-  function changeNote(note){ // when pressing a note in files
-    workspace.updateCurrentNote(note);
+
+  function changeNote(e,note){
+    if(e.target.className === 'file') {
+      workspace.updateCurrentNote(note);
+    }
   }
 
-  function downloadNote(filename){
-    const data = props.notes[note];
+
+  function downloadNote(noteName){
+    const data = props.notes[noteName];
     
     const blob = new Blob([data], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = noteName;
     a.click();
     
     URL.revokeObjectURL(url);
   }
+
+
 
   return (
  
@@ -31,7 +36,7 @@ export default function File(props) {
 
       <div 
         className='file' 
-        onClick={()=> changeNote(notename)}
+        onClick={(e)=> changeNote(e,notename)}
         key={notename}
       >
         {notename}
@@ -45,7 +50,7 @@ export default function File(props) {
              >Rename</div>
 
             <div
-              onClick={()=> workspace.deleteNote(notename,false)}
+              onClick={()=> workspace.deleteNote(notename)}
             >Delete</div>
 
             <div

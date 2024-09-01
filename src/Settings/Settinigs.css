@@ -1,11 +1,14 @@
 
 
+.settings{
+
+}
 
 .settings-options{
   display: flex;
   flex-direction: column;
   gap: 0.3em;
-  padding: 1em;
+  padding: 1em; 
   background-color: gold;
 }
 
@@ -30,5 +33,25 @@
     color: #FDF1F5;
     background-color: darkgray;
     font-size: 1rem;
+    font-family: Arial, Helvetica, sans-serif;
   }
+}
+
+.settings-preview{
+  resize: none;
+
+  border: 0;
+  outline: 2px solid gray;
+}
+.settings-preview::-webkit-scrollbar{
+  display: none;
+
+}
+
+.settings-container{
+  display: flex;
+  background: lightslategray;
+  height: 9em;
+  width: 60%;
+  margin: 2em 20%;
 }

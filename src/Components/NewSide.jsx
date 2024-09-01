@@ -13,22 +13,20 @@ export default function SideBar(prp) {
   function makeNewNote(){
     let newNoteName = prompt("Name: ");
     if(newNoteName.trim()){
-      workspace.updateNote(newNoteName);
-      workspace.updateCurrentNote(newNoteName);
+      workspace.updateNote(newNoteName,'',true);
+      // workspace.updateCurrentNote(newNoteName);
     }
   }
-
-
-
+  
   return (
     <div className="sidebar">
       <img src={filesIcon} alt="" onClick={prp.toggleFiles}/>
       <img src={addFileIcon} style={{padding: '10% 0'}} onClick={makeNewNote} alt="" />
       <img src={vimIcon} 
        style={
-        prp.vimEnabled ? { backgroundColor: 'lightgreen' }:null
+        workspace.vimEnabled ? { backgroundColor: 'lightgreen' }:null
        }
-       onClick={prp.toggleVim} alt="vim" />
+       onClick={workspace.toggleVim} alt="vim" />
        <img src={settingsIcon} 
         className='settings'
         alt="settings"

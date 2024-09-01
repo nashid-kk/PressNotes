@@ -25,6 +25,7 @@
 
     &:hover{
       scale: 0.99;
+      cursor: pointer;
     }
 
   }

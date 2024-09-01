@@ -4,57 +4,41 @@ import Selector from './selector'
 
 export default function FontSilzeSelector(props) {
 
-  const { editor } = props;
+  const { editor,updateEditorStyle } = props;
   const [showCoustom,setShowCoustom] = useState(false); // to show/hide coustom optioiins
 
-  const capitalizefirst=(word)=>{
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  }
-
   // to use as an option in selector
-  let currentFontSize = editor.fontSize === '1rem' ? 'Default' : editor.fontSize;
-  let coustomSize = editor.fontSize;
-  let fontSizeOptions = [
+  let currentFontSize = editor.style.fontSize === '1rem' ? 'Default' : editor.fontSize;
+  
+  let coustomSize = editor.style.fontSize.endsWith('px') ? editor.style.fontSize : '16px';
+  const fontSizeOptions = [
     'Default','Large','Medium','Small','Coustom'
   ];
   
-  if(!fontSizeOptions.includes(capitalizefirst(currentFontSize))){
+  if(!fontSizeOptions.includes(currentFontSize)){
     !showCoustom ?  setShowCoustom(true): null;
-    !currentFontSize === 'Coustom' ? currentFontSize = 'Coustom': null; 
-    currentFontSize = 'Coustom';
+    currentFontSize !== 'Coustom' ? currentFontSize = 'Coustom': null; 
   }
 
   const handleChange = (e)=>{
-    let fontSize = e.target.value.toLowerCase();
+    let fontSize = e.target.value;
     
     switch(fontSize){
-      case 'coustom':
+      case 'Coustom':
         setShowCoustom(true);
         fontSize = '';
         break;
 
-      case 'default': // postion improtant 
+      case 'Default': // postion improtant 
         fontSize = '1rem';
         // no break
       default:
         showCoustom ? setShowCoustom(false) : null;
     }
     
-    props.updateEditor({
-      ...props.editor,
-      fontSize: fontSize
-    });
+    updateEditorStyle('fontSize',fontSize);
   }
   
-
-  const handleCoustomChane=(e)=>{
-    coustomSize =  e.target.value +'px';
-
-    props.updateEditor({
-      ...props.editor,
-      fontSize: coustomSize
-    });
-  }
 
   return (
     <div className="settings-option">
@@ -63,10 +47,9 @@ export default function FontSilzeSelector(props) {
 
         <Selector 
           onChange={handleChange}
-          options={fontSizeOptions} 
+          options={fontSizeOptions}
           default={currentFontSize}
           editor={editor}
-          capitalizefirst={capitalizefirst}
           />
 
       {
@@ -74,7 +57,7 @@ export default function FontSilzeSelector(props) {
         <input type="number" 
          defaultValue={coustomSize.slice(0,2)}
          min={1} max={50}
-         onChange={handleCoustomChane}
+         onChange={(e)=> updateEditorStyle('fontSize',e.target.value+'px')}
          />
       }
       </div>

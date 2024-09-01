@@ -1,18 +1,16 @@
 import React, { useEffect } from 'react'
 import './Settinigs.css'
-import Selector from './selector';
 
 import FontSilzeSelector from './FontSilzeSelector';
+import FontSelecotr from './FontSelector';
+import Editor from '../Components/Editor';
 
 export default function Settings(props) {
 
-  const { editor } = props;
+  const { editor,changeEditor } = props;
 
 
 
-  const eidtorStyle ={
-    fontSize: editor.fontSize
-  };
 
 
   return (
@@ -21,28 +19,46 @@ export default function Settings(props) {
 
         <div className="settings-options">
           
-          <FontSilzeSelector editor={editor} updateEditor={props.updateEditor}/>
+          <FontSilzeSelector updateEditorStyle={props.updateEditorStyle} editor={editor} />
 
-          <div className="settings-option">
-            <h4>Font</h4>
-            <Selector options={['monospace','sans'
-            ]}/>
+          <FontSelecotr updateEditorStyle={props.updateEditorStyle} editor={editor} />
+
+          <div className='settings-option'>
+            Show line numbers
+            <input type="checkbox" 
+            onChange={(e)=> {changeEditor('showLineNumbers',e.target.checked)}}
+            checked={editor.showLineNumbers} 
+            />
           </div>
-
         </div>
 
       </div>
 
+      <div className="settings-container">
+
+
+
+       { editor.showLineNumbers &&
+        <textarea 
+        id='line-number'
+        readOnly cols={1} 
+        value={window.lines}
+        style={editor}
+        />
+       }
 
       <textarea 
-        id='main'
+        className='settings-preview'
         spellCheck={false}
         autoComplete='offd'
         autoCorrect='off'
-        style={eidtorStyle}
+        style={editor.style}
         defaultValue={'Preview your editor...'}
-        >
-      </textarea>
+        />
+
+      </div>
+
+
 
       <div className="submit">
         <button id='bt-reset'>Reset</button>
